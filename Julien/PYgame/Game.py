@@ -165,7 +165,7 @@ class Bullet(pygame.sprite.Sprite):
     def __init__(self, spaceship):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(BASE_DIR / "Sprites/bullet/bullet.png")
-        self.image = pygame.transform.scale(self.image, (16, 16))
+        self.image = pygame.transform.scale(self.image, (32, 32))
         self.rect = self.image.get_rect()
         self.rect.centerx = spaceship.rect.centerx 
         self.rect.centery = spaceship.rect.centery 
@@ -173,7 +173,7 @@ class Bullet(pygame.sprite.Sprite):
         self.pos = pygame.Vector2(self.rect.center)
 
     def update(self):
-        self.pos += self.direction * 10
+        self.pos += self.direction * 75
         self.rect.center = round(self.pos.x), round(self.pos.y)
 
 def main():
@@ -191,3 +191,5 @@ if __name__ == '__main__':
     main()
     pygame.quit()
     sys.exit()
+
+####
