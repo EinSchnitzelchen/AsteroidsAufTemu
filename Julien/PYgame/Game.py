@@ -112,8 +112,8 @@ class Spaceship(pygame.sprite.Sprite):
 
 
         self.velocity = 0  # Startgeschwindigkeit
-        self.acceleration = 0.2  # Wie schnell das Schiff beschleunigt
-        self.max_speed = 20  # Maximale Geschwindigkeit
+        self.acceleration = 0.1  # Wie schnell das Schiff beschleunigt
+        self.max_speed = 10  # Maximale Geschwindigkeit
         self.friction = 0.05  # Wie schnell es abbremst
 
     def wrap_around(self):
@@ -191,5 +191,3 @@ if __name__ == '__main__':
     main()
     pygame.quit()
     sys.exit()
-
-####
