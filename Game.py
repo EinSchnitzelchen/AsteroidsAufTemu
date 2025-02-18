@@ -15,7 +15,7 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 class Game:
     def __init__(self):
         self.run = True
-        self.image = pygame.image.load(BASE_DIR / "Sprites/background/background.png")
+        self.image = pygame.image.load(BASE_DIR / "Assets/background/background.png")
         self.image = pygame.transform.scale(self.image, (screen_width, screen_height))
         self.all_sprites = pygame.sprite.Group()
         self.bullet_group = pygame.sprite.Group()

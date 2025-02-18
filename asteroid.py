@@ -20,7 +20,7 @@ class Asteroid(pygame.sprite.Sprite):
         else:
             self.spawn()
 
-        self.image = pygame.image.load(BASE_DIR / "Sprites/asteroid/asteroid.png")
+        self.image = pygame.image.load(BASE_DIR / "Assets/asteroid/asteroid.png")
         self.image = pygame.transform.scale(self.image, (self.size * 2, self.size * 2))
         self.rect = self.image.get_rect(center=(self.posx, self.posy))
 

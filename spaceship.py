@@ -8,7 +8,7 @@ class Spaceship(pygame.sprite.Sprite):
     def __init__(self, screen):
         pygame.sprite.Sprite.__init__(self)
         self.screen = screen
-        self.image = pygame.image.load(BASE_DIR / "Sprites/spaceship/spaceship.png")
+        self.image = pygame.image.load(BASE_DIR / "Assets/spaceship/spaceship.png")
         self.image = pygame.transform.rotozoom(self.image, 0, 0.75)
         self.org_image = self.image.copy()
         self.rect = self.image.get_rect(center=(70, 600))
@@ -49,9 +49,9 @@ class Spaceship(pygame.sprite.Sprite):
     def handle_events(self):
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_LEFT]:
-            self.angle += 3
+            self.angle += 4
         if pressed[pygame.K_RIGHT]:
-            self.angle -= 3
+            self.angle -= 4
         self.direction = pygame.Vector2(0, -1).rotate(-self.angle)
         self.image = pygame.transform.rotate(self.org_image, self.angle)
         self.rect = self.image.get_rect(center=self.rect.center)

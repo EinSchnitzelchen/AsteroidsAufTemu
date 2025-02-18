@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).parent
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, spaceship):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(BASE_DIR / "Sprites/bullet/bullet.png")
+        self.image = pygame.image.load(BASE_DIR / "Assets/bullet/bullet.png")
         self.image = pygame.transform.scale(self.image, (32, 32))
         self.rect = self.image.get_rect()
         self.rect.centerx = spaceship.rect.centerx
