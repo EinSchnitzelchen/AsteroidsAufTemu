@@ -3,6 +3,7 @@ import pygame
 from pathlib import Path
 from screeninfo import get_monitors
 import random as r
+import math
 
 BASE_DIR = Path(__file__).parent
 display = get_monitors()
@@ -16,14 +17,41 @@ screen_height = display[0].height
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 class Asteroid(pygame.sprite.Sprite):
-    def __init__(self, screen, level):
+    def __init__(self, screen, level, game, size=None, spawned_by_other=False, x=0, y=0):
+        super().__init__()
+        self.size = size if size else r.randint(30, 70)
         self.screen = screen
-        self.spawn()
-        if level < 13:
-            self.speed = r.randint(4 + level, (level + 7))
+        self.game = game  
+
+        if spawned_by_other:
+            self.posx = x
+            self.posy = y
+            self.set_random_direction()
         else:
-            self.speed = r.randint(4 + 13, (level + 20))
-    
+            self.spawn()  
+
+        # Load and scale the asteroid image AFTER setting position
+        self.image = pygame.image.load(BASE_DIR / "Sprites/asteroid/asteroid.png")  # Adjust path if needed
+        self.image = pygame.transform.scale(self.image, (self.size * 2, self.size * 2))  
+        self.rect = self.image.get_rect(center=(self.posx, self.posy))  # Center it properly
+
+        # Set speed based on level
+        if level < 13:
+            self.speed = r.randint(4 + level, level + 7)
+        else:
+            self.speed = r.randint(4 + 13, level + 20)
+
+
+    def hit(self):
+        if self.size > 50:
+            new_size = self.size / 2
+            # Spawn two new asteroids with smaller size
+            self.game.new_asteroid(new_size, self.posx, self.posy)
+            self.game.new_asteroid(new_size, self.posx, self.posy)
+        self.kill()  # Remove from all sprite groups
+
+
+     
     def spawn(self):
         random_side = r.randint(1, 4)
         if random_side in [1, 2]:  # Oben oder unten
@@ -41,6 +69,12 @@ class Asteroid(pygame.sprite.Sprite):
 
         self.dirx = dx / dist
         self.diry = dy / dist
+        self.rect = pygame.Rect(self.posx - self.size, self.posy - self.size, self.size * 2, self.size * 2)
+        
+    def set_random_direction(self):
+        angle = math.radians(r.uniform(0, 360))
+        self.dirx = math.cos(angle)
+        self.diry = math.sin(angle)
 
     def wrap_around(self):
         if self.posx < 0:
@@ -56,12 +90,11 @@ class Asteroid(pygame.sprite.Sprite):
     def move(self):
         self.posx += self.speed * self.dirx
         self.posy += self.speed * self.diry
+        self.rect.center = (self.posx, self.posy)
         self.wrap_around()
 
     def draw(self):
-        pygame.draw.circle(self.screen, "white", (int(self.posx), int(self.posy)), 40)
-
-
+        pygame.draw.circle(self.screen, "white", (int(self.posx), int(self.posy)), self.size)
 
 class Spaceship(pygame.sprite.Sprite):
 
@@ -78,7 +111,7 @@ class Spaceship(pygame.sprite.Sprite):
         self.velocity = pygame.Vector2(0, 0)
         self.acceleration = 0.3
         self.max_speed = 10
-        self.friction = 0.02
+        self.friction = 0.01
 
     def wrap_around(self):
         if self.pos.x < 0:
@@ -137,9 +170,6 @@ class Bullet(pygame.sprite.Sprite):
         self.pos += self.direction * 75
         self.rect.center = round(self.pos.x), round(self.pos.y)
 
-class Score():
-    def __init__(self):
-     pass
 class Game:
     def __init__(self):
         self.run = True
@@ -147,13 +177,37 @@ class Game:
         self.image = pygame.transform.scale(self.image, (screen_width, screen_height))
         self.all_sprites = pygame.sprite.Group()
         self.bullet_group = pygame.sprite.Group()
+        self.asteroid_group = pygame.sprite.Group()
         self.spaceship = Spaceship()
         self.all_sprites.add(self.spaceship)
-        self.asteroids = [Asteroid(screen, level) for _ in range(5)]
+        for _ in range(5):
+            asteroid = Asteroid(screen, level, self)
+            self.asteroid_group.add(asteroid)
+            self.all_sprites.add(asteroid)
+
+    def check_collisions(self):
+        for bullet in self.bullet_group:
+            for asteroid in self.asteroid_group:  # Use the actual sprite group
+                if bullet.rect.colliderect(asteroid.rect):
+                    asteroid.hit()
+                    bullet.kill()
+
+
+
+    def new_asteroid(self, size, x, y):
+        new_asteroid = Asteroid(screen, level, self, size, True, x, y)
+        self.asteroid_group.add(new_asteroid)
+        self.all_sprites.add(new_asteroid)  # Add to all sprites for drawing
+
+
 
     def handle_events(self):
         keys = pygame.key.get_pressed()
         self.spaceship.handle_events()
+        if keys[pygame.K_UP]:
+            self.spaceship.update
+        if keys[pygame.K_DOWN]:
+            self.spaceship.update
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.run = False
@@ -164,20 +218,26 @@ class Game:
                     bullet = Bullet(self.spaceship)
                     self.bullet_group.add(bullet)
                     self.all_sprites.add(bullet)
-                    #score += score_increment
-                    
 
     def update(self):
         self.all_sprites.update()
-        for asteroid in self.asteroids:
+
+        # Remove destroyed asteroids
+        self.asteroid_group = pygame.sprite.Group([asteroid for asteroid in self.asteroid_group if asteroid.alive()])
+
+        for asteroid in self.asteroid_group:
             asteroid.move()
+
+        self.check_collisions()
+
+
 
     def draw(self):
         screen.blit(self.image, (0, 0))
         self.all_sprites.draw(screen)
-        for asteroid in self.asteroids:
-            asteroid.draw()
         pygame.display.update()
+
+
 
 def main():
     pygame.init()
