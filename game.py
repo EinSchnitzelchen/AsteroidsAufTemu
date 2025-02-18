@@ -1,4 +1,3 @@
-# game.py
 import pygame
 from screeninfo import get_monitors
 from asteroid import Asteroid
@@ -6,11 +5,19 @@ from spaceship import Spaceship
 from bullet import Bullet
 from pathlib import Path
 
+pygame.init()
+
+## GENERAL VARS
 display = get_monitors()
 BASE_DIR = Path(__file__).parent
+
+## SCREEN SET VARS
 screen_width = display[0].width
 screen_height = display[0].height
 screen = pygame.display.set_mode((screen_width, screen_height))
+
+# FONT
+font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', 80)
 
 class Game:
     def __init__(self):
@@ -20,8 +27,10 @@ class Game:
         self.all_sprites = pygame.sprite.Group()
         self.bullet_group = pygame.sprite.Group()
         self.asteroid_group = pygame.sprite.Group()
-        self.spaceship = Spaceship(screen)  # Pass the screen here
+        self.spaceship = Spaceship(screen)
         self.all_sprites.add(self.spaceship)
+        self.score_vel = 0  # Score als Instanzvariable
+
         for _ in range(5):
             asteroid = Asteroid(screen, self)
             self.asteroid_group.add(asteroid)
@@ -33,6 +42,11 @@ class Game:
                 if bullet.rect.colliderect(asteroid.rect):
                     asteroid.hit()
                     bullet.kill()
+                    self.score_vel += 1  # Richtig auf Instanzvariable zugreifen
+
+    def show_score(self, x, y):
+        score = font.render("Score: " + str(self.score_vel), True, (0, 255, 0))
+        screen.blit(score, (x, y))  # Richtiges Blit-Ziel
 
     def new_asteroid(self, size, x, y):
         asteroid = Asteroid(screen, self, size, True, x, y)
@@ -62,4 +76,5 @@ class Game:
     def draw(self):
         screen.blit(self.image, (0, 0))
         self.all_sprites.draw(screen)
+        self.show_score(10, 10)  # Score wird jetzt gezeichnet
         pygame.display.update()

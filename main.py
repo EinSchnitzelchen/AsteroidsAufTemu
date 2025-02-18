@@ -9,12 +9,12 @@ def main():
     pygame.display.set_caption('Spaceship Game')
     clock = pygame.time.Clock()
     game = Game()
-    font = pygame.font.Font(None, 36)
 
     while game.run:
         game.handle_events()
         game.update()
         game.draw()
+        game.show_score(0,0)
         clock.tick(60)
 
 if __name__ == '__main__':
