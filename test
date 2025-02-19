@@ -1,3 +1,4 @@
+# game.py
 import pygame
 from screeninfo import get_monitors
 from asteroid import Asteroid
@@ -5,19 +6,11 @@ from spaceship import Spaceship
 from bullet import Bullet
 from pathlib import Path
 
-pygame.init()
-
-## GENERAL VARS
 display = get_monitors()
 BASE_DIR = Path(__file__).parent
-
-## SCREEN SET VARS
 screen_width = display[0].width
 screen_height = display[0].height
 screen = pygame.display.set_mode((screen_width, screen_height))
-
-# FONT
-font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', 80)
 
 class Game:
     def __init__(self):
@@ -27,20 +20,18 @@ class Game:
         self.all_sprites = pygame.sprite.Group()
         self.bullet_group = pygame.sprite.Group()
         self.asteroid_group = pygame.sprite.Group()
-        self.spaceship = Spaceship(screen)
+        self.spaceship = Spaceship(screen)  # Pass the screen here
         self.all_sprites.add(self.spaceship)
-        self.score_vel = 0  # Score als Instanzvariable
-        self.shoot_sound = pygame.mixer.Sound(BASE_DIR / "Assets/spaceship/shoot.wav")
-        self.asteroid_hit_sound = pygame.mixer.Sound(BASE_DIR / "Assets/asteroid/hit.wav")
-
         for _ in range(5):
             asteroid = Asteroid(screen, self)
             self.asteroid_group.add(asteroid)
             self.all_sprites.add(asteroid)
 
         self.sound = pygame.mixer.Sound(BASE_DIR / "Assets/soundtrack.wav")
-        self.channel = self.sound.play(loops = -1)
-
+        self.loop_start = 11077
+        self.loop_end = 18335
+        self.channel = self.sound.play()
+        self.clock = pygame.time.Clock()
 
     def check_collisions(self):
         for bullet in self.bullet_group:
@@ -48,13 +39,7 @@ class Game:
                 if bullet.rect.colliderect(asteroid.rect):
                     asteroid.hit()
                     bullet.kill()
-                    self.score_vel += 1  # Richtig auf Instanzvariable zugreifen
-                    pygame.mixer.Sound.play(self.asteroid_hit_sound)
-
-    def show_score(self, x, y):
-        score = font.render("Score: " + str(self.score_vel), True, (0, 255, 0))
-        screen.blit(score, (x, y))  # Richtiges Blit-Ziel
-
+                            
     def new_asteroid(self, size, x, y):
         asteroid = Asteroid(screen, self, size, True, x, y)
         self.asteroid_group.add(asteroid)
@@ -73,16 +58,22 @@ class Game:
                     bullet = Bullet(self.spaceship)
                     self.bullet_group.add(bullet)
                     self.all_sprites.add(bullet)
-                    pygame.mixer.Sound.play(self.shoot_sound)
 
     def update(self):
         self.all_sprites.update()
         for asteroid in self.asteroid_group:
             asteroid.move()
         self.check_collisions()
+        if not self.channel.get_busy():  # Restart if finished
+            self.channel = self.sound.play()
+
+        self.current_time = pygame.mixer.music.get_pos()
+    
+        if self.current_time >= self.loop_end:
+            channel.stop()
+            channel = self.sound.play(start=self.loop_start / 1000.0)
 
     def draw(self):
         screen.blit(self.image, (0, 0))
         self.all_sprites.draw(screen)
-        self.show_score(10, 10)  # Score wird jetzt gezeichnet
         pygame.display.update()
