@@ -33,10 +33,7 @@ class Game:
         self.shoot_sound = pygame.mixer.Sound(BASE_DIR / "Assets/spaceship/shoot.wav")
         self.asteroid_hit_sound = pygame.mixer.Sound(BASE_DIR / "Assets/asteroid/hit.wav")
 
-        for _ in range(5):
-            asteroid = Asteroid(screen, self)
-            self.asteroid_group.add(asteroid)
-            self.all_sprites.add(asteroid)
+        self.spawn_asteroids()
 
         self.sound = pygame.mixer.Sound(BASE_DIR / "Assets/soundtrack.wav")
         self.channel = self.sound.play(loops = -1)
@@ -50,6 +47,12 @@ class Game:
                     bullet.kill()
                     self.score_vel += 1  # Richtig auf Instanzvariable zugreifen
                     pygame.mixer.Sound.play(self.asteroid_hit_sound)
+
+    def spawn_asteroids(self):
+        for _ in range(5):
+            asteroid = Asteroid(screen, self)
+            self.asteroid_group.add(asteroid)
+            self.all_sprites.add(asteroid)
 
 
     def show_score(self, x, y):
@@ -81,6 +84,8 @@ class Game:
         for asteroid in self.asteroid_group:
             asteroid.move()
         self.check_collisions()
+        if not self.asteroid_group:
+            self.spawn_asteroids()
 
     def draw(self):
         screen.blit(self.image, (0, 0))
