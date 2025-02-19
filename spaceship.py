@@ -14,7 +14,7 @@ class Spaceship(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(70, 600))
         self.angle = 0
         self.direction = pygame.Vector2(0, -1)
-        self.pos = pygame.Vector2(self.rect.center)
+        self.pos = [self.screen.get_width() / 2, self.screen.get_height() / 2]
         self.velocity = pygame.Vector2(0, 0)
         self.acceleration = 0.3
         self.max_speed = 10

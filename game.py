@@ -51,6 +51,7 @@ class Game:
                     self.score_vel += 1  # Richtig auf Instanzvariable zugreifen
                     pygame.mixer.Sound.play(self.asteroid_hit_sound)
 
+
     def show_score(self, x, y):
         score = font.render("Score: " + str(self.score_vel), True, (0, 255, 0))
         screen.blit(score, (x, y))  # Richtiges Blit-Ziel
