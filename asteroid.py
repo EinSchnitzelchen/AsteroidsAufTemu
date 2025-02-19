@@ -15,15 +15,17 @@ class Asteroid(pygame.sprite.Sprite):
         else:
             self.size = size
         
-        self.asteroid_variation = [BASE_DIR / "Assets/asteroid/asteroid.png", 
-                                   BASE_DIR / "Assets/asteroid/asteroid_purple.png",
-                                   BASE_DIR / "Assets/asteroid/asteroid_green.png"
-                                   ]
+        self.asteroid_variation = [
+            BASE_DIR / "Assets/asteroid/asteroid.png", 
+            BASE_DIR / "Assets/asteroid/asteroid_purple.png",
+            BASE_DIR / "Assets/asteroid/asteroid_green.png"
+        ]
         
-        self.asteroid_small_variation = [BASE_DIR / "Assets/asteroid/asteroid_small.png", 
-                                         BASE_DIR / "Assets/asteroid/asteroid_small_purple.png",
-                                         BASE_DIR / "Assets/asteroid/asteroid_small_green.png"
-                                         ]
+        self.asteroid_small_variation = [
+            BASE_DIR / "Assets/asteroid/asteroid_small.png", 
+            BASE_DIR / "Assets/asteroid/asteroid_small_purple.png",
+            BASE_DIR / "Assets/asteroid/asteroid_small_green.png"
+        ]
 
         self.screen = screen
         self.game = game
