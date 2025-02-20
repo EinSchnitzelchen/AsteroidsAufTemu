@@ -47,6 +47,10 @@ class Game:
                     bullet.kill()
                     self.score_vel += 1  # Richtig auf Instanzvariable zugreifen
                     pygame.mixer.Sound.play(self.asteroid_hit_sound)
+        for asteroid in self.asteroid_group:
+            if asteroid.rect.colliderect(self.spaceship.rect):
+                asteroid.kill()
+                self.score_vel -= 1
 
     def spawn_asteroids(self):
         for _ in range(5):
@@ -86,6 +90,7 @@ class Game:
         self.check_collisions()
         if not self.asteroid_group:
             self.spawn_asteroids()
+
 
     def draw(self):
         screen.blit(self.image, (0, 0))
