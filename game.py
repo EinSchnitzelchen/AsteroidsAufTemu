@@ -17,7 +17,7 @@ screen_height = display[0].height
 screen = pygame.display.set_mode((screen_width, screen_height))
 
 # FONT
-font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', 80)
+font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', round(screen_width / 32))
 
 class Game:
     def __init__(self):

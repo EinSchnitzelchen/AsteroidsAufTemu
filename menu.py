@@ -12,10 +12,6 @@ screen_width = display[0].width
 screen_height = display[0].height
 screen = pygame.display.set_mode((screen_width, screen_height))
 
-
-
-
-
 class Menu:
     def __init__(self):
         
@@ -30,8 +26,6 @@ class Menu:
         self.logo_rect = self.logo.get_rect()
         self.image = pygame.transform.scale(self.image, (screen_width, screen_height))
 
-        self.sound = pygame.mixer.Sound(BASE_DIR / "Assets/soundtrack.wav")
-        self.channel = self.sound.play(loops = -1)
         self.logo_rect.center = (screen_width // 2, screen_height // 4)
 
         self.current_frame = 0
@@ -52,7 +46,7 @@ class Menu:
                 self.run = False
 
     def show_Text(self):
-        self.font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', 80 + round(math.sin(self.current_frame)*2))
+        self.font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', round(screen_width / 32) + round(math.sin(self.current_frame)*2))
         Text = self.font.render("PRESS ANY BUTTON TO START",True, (0, 255, 0))
         text_rect = Text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 + 100))
         screen.blit(Text, text_rect)
