@@ -33,6 +33,7 @@ class Game:
         self.all_sprites = pygame.sprite.Group()
         self.bullet_group = pygame.sprite.Group()
         self.asteroid_group = pygame.sprite.Group()
+        self.max_bullets = 2
 
         self.spaceship = Spaceship(screen)
         self.all_sprites.add(self.spaceship)
@@ -85,10 +86,11 @@ class Game:
                     self.run = False
 
                 if event.key == pygame.K_SPACE:
-                    bullet = Bullet(self.spaceship)
-                    self.bullet_group.add(bullet)
-                    self.all_sprites.add(bullet)
-                    pygame.mixer.Sound.play(self.shoot_sound)
+                    if self.bullet_group.__len__() < self.max_bullets:
+                        bullet = Bullet(self.spaceship, screen)
+                        self.bullet_group.add(bullet)
+                        self.all_sprites.add(bullet)
+                        pygame.mixer.Sound.play(self.shoot_sound)
 
     def update(self):
         self.all_sprites.update()

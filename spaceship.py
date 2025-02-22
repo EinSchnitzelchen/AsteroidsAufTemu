@@ -35,6 +35,7 @@ class Spaceship(pygame.sprite.Sprite):
 
         elif self.pos.y > self.screen.get_height():
             self.pos.y = 0
+        
 
     def move(self):
         keys = pygame.key.get_pressed()
@@ -62,7 +63,7 @@ class Spaceship(pygame.sprite.Sprite):
 
         if pressed[pygame.K_RIGHT]:
             self.angle -= 4
-            
+
         self.direction = pygame.Vector2(0, -1).rotate(-self.angle)
         self.image = pygame.transform.rotate(self.org_image, self.angle)
         self.rect = self.image.get_rect(center=self.rect.center)
