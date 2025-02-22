@@ -1,6 +1,7 @@
 import pygame
 from screeninfo import get_monitors
 from pathlib import Path
+import math
 
 pygame.init()
 
@@ -14,8 +15,10 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 
 
 
+
 class Menu:
     def __init__(self):
+        
         self.run = True
         self.start_game = False
         self.logo_pos_x = screen.get_width() / 2
@@ -31,6 +34,11 @@ class Menu:
         self.channel = self.sound.play(loops = -1)
         self.logo_rect.center = (screen_width // 2, screen_height // 4)
 
+        self.current_frame = 0
+
+    def logo_float(self):
+        self.logo_rect.centery = math.sin(self.current_frame) * 30 + screen_height/7 * 1.5
+
 
     def handle_events(self):
         keys = pygame.key.get_pressed()
@@ -43,11 +51,25 @@ class Menu:
                 self.start_game = True
                 self.run = False
 
+    def show_Text(self):
+        self.font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', 80 + round(math.sin(self.current_frame)*2))
+        Text = self.font.render("PRESS ANY BUTTON TO START",True, (0, 255, 0))
+        text_rect = Text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 + 100))
+        screen.blit(Text, text_rect)
+
+
     def draw(self):
+        screen.blit(self.image, (0, 0))
         screen.blit(self.logo, self.logo_rect)
+        self.show_Text()
         pygame.display.flip()
         pygame.time.Clock().tick(60)
         self.handle_events()
+        self.current_frame = self.current_frame + 0.1
+        self.logo_float()
+        
+        
+        
 
     
 
