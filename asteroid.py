@@ -9,6 +9,7 @@ BASE_DIR = Path(__file__).parent
 class Asteroid(pygame.sprite.Sprite):
     def __init__(self, screen, game, size=None, spawned_by_other=False, x=0, y=0):
         super().__init__()
+        
         self.size = 0
         if size is None:
             self.size = r.randint(40, 70)

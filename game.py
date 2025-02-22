@@ -7,35 +7,38 @@ from pathlib import Path
 
 pygame.init()
 
-## GENERAL VARS
+#Generelle Variablen
 display = get_monitors()
-BASE_DIR = Path(__file__).parent
+BASE_DIR = Path(__file__).parent        #Gibt den Pfad zu dem Projetz an, egal in welchem Ordner er ist
 
-## SCREEN SET VARS
+#Variablen für die Größe des Bildschirms
 screen_width = display[0].width
 screen_height = display[0].height
 screen = pygame.display.set_mode((screen_width, screen_height))
 
-# FONT
+# Hier wird das Text Objekt erstellt mit der lokalen Schriftart
 font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', round(screen_width / 32))
 
 class Game:
     def __init__(self):
         self.run = True
+
+        #Initialisieren der Assets, die diese Datei braucht
         self.image = pygame.image.load(BASE_DIR / "Assets/background/background.png")
         self.image = pygame.transform.scale(self.image, (screen_width, screen_height))
+        self.shoot_sound = pygame.mixer.Sound(BASE_DIR / "Assets/spaceship/shoot.wav")
+        self.asteroid_hit_sound = pygame.mixer.Sound(BASE_DIR / "Assets/asteroid/hit.wav")
+        self.sound = pygame.mixer.Sound(BASE_DIR / "Assets/soundtrack.wav")
+
         self.all_sprites = pygame.sprite.Group()
         self.bullet_group = pygame.sprite.Group()
         self.asteroid_group = pygame.sprite.Group()
+
         self.spaceship = Spaceship(screen)
         self.all_sprites.add(self.spaceship)
-        self.score_vel = 0  # Score als Instanzvariable
-        self.shoot_sound = pygame.mixer.Sound(BASE_DIR / "Assets/spaceship/shoot.wav")
-        self.asteroid_hit_sound = pygame.mixer.Sound(BASE_DIR / "Assets/asteroid/hit.wav")
+        self.score_vel = 0 
 
         self.spawn_asteroids()
-
-        self.sound = pygame.mixer.Sound(BASE_DIR / "Assets/soundtrack.wav")
         self.channel = self.sound.play(loops = -1)
 
 
@@ -45,8 +48,9 @@ class Game:
                 if bullet.rect.colliderect(asteroid.rect):
                     asteroid.hit()
                     bullet.kill()
-                    self.score_vel += 1  # Richtig auf Instanzvariable zugreifen
+                    self.score_vel += 1  
                     pygame.mixer.Sound.play(self.asteroid_hit_sound)
+
         for asteroid in self.asteroid_group:
             if asteroid.rect.colliderect(self.spaceship.rect):
                 asteroid.kill()
@@ -71,12 +75,15 @@ class Game:
     def handle_events(self):
         keys = pygame.key.get_pressed()
         self.spaceship.handle_events()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.run = False
+
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.run = False
+
                 if event.key == pygame.K_SPACE:
                     bullet = Bullet(self.spaceship)
                     self.bullet_group.add(bullet)
@@ -87,7 +94,9 @@ class Game:
         self.all_sprites.update()
         for asteroid in self.asteroid_group:
             asteroid.move()
+
         self.check_collisions()
+
         if not self.asteroid_group:
             self.spawn_asteroids()
 
