@@ -22,7 +22,7 @@ class Menu:
 
         self.two_player = False
 
-        self.image = pygame.image.load(BASE_DIR / "Assets/background/background.png")
+        self.image = pygame.image.load(BASE_DIR / "Assets/background/main_menu.gif")
         self.logo = pygame.image.load(BASE_DIR / "Assets/logo.png")
         self.logo = pygame.transform.scale(self.logo, (screen_width/3 * 1.5, screen_height/7 * 1.5))
         self.logo_rect = self.logo.get_rect()
