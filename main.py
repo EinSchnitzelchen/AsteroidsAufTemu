@@ -15,7 +15,6 @@ def main():
     while menu.run:
         menu.draw()
         two_player = menu.two_player
-        print(two_player)
 
     game = Game(two_player)
 

@@ -29,6 +29,15 @@ class Game:
         self.image = pygame.transform.scale(self.image, (screen_width, screen_height))
         self.shoot_sound = pygame.mixer.Sound(BASE_DIR / "Assets/spaceship/shoot.wav")
         self.asteroid_hit_sound = pygame.mixer.Sound(BASE_DIR / "Assets/asteroid/hit.wav")
+        self.spaceship_life_img = pygame.image.load(BASE_DIR / "Assets/spaceship/spaceship.png")
+        self.spaceship_life_img = pygame.transform.scale(self.spaceship_life_img, (80, 80))
+
+        self.spaceship_p2_life_img = pygame.image.load(BASE_DIR / "Assets/spaceship/spaceship_p2.png")
+        self.spaceship_p2_life_img = pygame.transform.scale(self.spaceship_p2_life_img, (80, 80))
+
+        self.lives = 4
+        self.lifes_p2 = 4
+
         self.sound = pygame.mixer.Sound(BASE_DIR / "Assets/soundtrack.wav")
 
         self.all_sprites = pygame.sprite.Group()
@@ -71,12 +80,12 @@ class Game:
         for asteroid in self.asteroid_group:
             if asteroid.rect.colliderect(self.spaceship.rect):
                 asteroid.kill()
-                self.score_vel -= 1
+                self.lives -= 1
 
             if self.two_player:
                 if asteroid.rect.colliderect(self.spaceship_two.rect) & self.two_player:
                     asteroid.kill()
-                    self.score_vel -= 1
+                    self.lifes_p2 -= 1
             
 
     def spawn_asteroids(self):
@@ -133,9 +142,6 @@ class Game:
                             self.all_sprites.add(bullet)
                             pygame.mixer.Sound.play(self.shoot_sound)
 
-                
-
-
     def update(self):
         self.all_sprites.update()
         for asteroid in self.asteroid_group:
@@ -146,9 +152,19 @@ class Game:
         if not self.asteroid_group:
             self.spawn_asteroids()
 
+    def draw_lives(self):
+        for i in range(self.lives):
+            screen.blit(self.spaceship_life_img, (10 + i * 60, screen_height - 90))
+
+        if self.two_player:
+            for i in range(self.lifes_p2):
+                screen.blit(self.spaceship_p2_life_img, (screen_width - 10 - i * 60, screen_height - 90))
+
+
 
     def draw(self):
         screen.blit(self.image, (0, 0))
         self.all_sprites.draw(screen)
-        self.show_score(10, 10)  # Score wird jetzt gezeichnet
+        self.show_score(10, 10)
+        self.draw_lives()
         pygame.display.update()

@@ -19,7 +19,7 @@ class Bullet(pygame.sprite.Sprite):
         self.pos = pygame.Vector2(self.rect.center)
 
     def update(self):
-        self.pos += self.direction * 75
+        self.pos += self.direction * 50
         self.rect.center = round(self.pos.x), round(self.pos.y)
 
         if self.pos.x < 0:
