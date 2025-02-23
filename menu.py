@@ -20,6 +20,8 @@ class Menu:
         self.logo_pos_x = screen.get_width() / 2
         self.logo_pos_y = 100
 
+        self.two_player = False
+
         self.image = pygame.image.load(BASE_DIR / "Assets/background/background.png")
         self.logo = pygame.image.load(BASE_DIR / "Assets/logo.png")
         self.logo = pygame.transform.scale(self.logo, (screen_width/3 * 1.5, screen_height/7 * 1.5))
@@ -35,21 +37,29 @@ class Menu:
 
 
     def handle_events(self):
-        keys = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.run = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.run = False
-                self.start_game = True
-                self.run = False
+                elif event.key == pygame.K_RSHIFT:
+                    self.two_player = True
+                    self.start_game = True
+                    self.run = False
+                elif event.key == pygame.K_SPACE:
+                    self.two_player = False
+                    self.start_game = True
+                    self.run = False
 
     def show_Text(self):
         self.font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', round(screen_width / 32) + round(math.sin(self.current_frame)*2))
-        Text = self.font.render("PRESS ANY BUTTON TO START",True, (0, 255, 0))
+        Text = self.font.render("PRESS SPACE FOR SINGLEPLAYER",True, (0, 255, 0))
+        Text_2 = self.font.render("PRESS RIGHT SHIFT FOR MULTIPLAYER", True, (0,255,0))
         text_rect = Text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 + 100))
+        text_2_rect = Text_2.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 + 200))
         screen.blit(Text, text_rect)
+        screen.blit(Text_2, text_2_rect)
 
 
     def draw(self):

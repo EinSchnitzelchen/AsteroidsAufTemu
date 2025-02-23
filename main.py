@@ -9,11 +9,16 @@ def main():
     pygame.font.init()
     pygame.display.set_caption('Spaceship Game')
     clock = pygame.time.Clock()
-    game = Game()
     menu = Menu()
+    two_player = False
 
     while menu.run:
         menu.draw()
+        two_player = menu.two_player
+        print(two_player)
+
+    game = Game(two_player)
+
         
     if menu.start_game:
         while game.run:
