@@ -4,6 +4,7 @@ from asteroid import Asteroid
 from spaceship import Spaceship
 from bullet import Bullet
 from pathlib import Path
+from deathscreen import Deathscreen
 
 pygame.init()
 
@@ -23,7 +24,6 @@ class Game:
     def __init__(self, two_player = False):
         self.run = True
         self.two_player = two_player
-        self.level = 1
 
         #Initialisieren der Assets, die diese Datei braucht
         self.image = pygame.image.load(BASE_DIR / "Assets/background/background.png")
@@ -63,7 +63,7 @@ class Game:
     def check_collisions(self):
         for bullet in self.bullet_group:
             for asteroid in self.asteroid_group:
-                if pygame.sprite.collide_mask(asteroid, bullet):
+                if bullet.rect.colliderect(asteroid.rect):
                     asteroid.hit()
                     bullet.kill()
                     self.score_vel += 1  
@@ -72,25 +72,25 @@ class Game:
         if self.two_player:
             for bullet in self.bullet_group_p2:
                 for asteroid in self.asteroid_group:
-                    if pygame.sprite.collide_mask(asteroid, bullet):
+                    if bullet.rect.colliderect(asteroid.rect):
                         asteroid.hit()
                         bullet.kill()
                         self.score_vel += 1  
                         pygame.mixer.Sound.play(self.asteroid_hit_sound)
 
         for asteroid in self.asteroid_group:
-            if pygame.sprite.collide_mask(self.spaceship, asteroid):
+            if asteroid.rect.colliderect(self.spaceship.rect):
                 asteroid.kill()
                 self.lives -= 1
 
             if self.two_player:
-                if pygame.sprite.collide_mask(self.spaceship_two , asteroid):
+                if asteroid.rect.colliderect(self.spaceship_two.rect) & self.two_player:
                     asteroid.kill()
                     self.lifes_p2 -= 1
             
 
     def spawn_asteroids(self):
-        for _ in range(5 + self.level - 1):
+        for _ in range(5):
             asteroid = Asteroid(screen, self)
             self.asteroid_group.add(asteroid)
             self.all_sprites.add(asteroid)
@@ -148,14 +148,10 @@ class Game:
         for asteroid in self.asteroid_group:
             asteroid.move()
 
-        if self.score_vel == 10:
-            self.max_bullets = 5
-
         self.check_collisions()
 
         if not self.asteroid_group:
             self.spawn_asteroids()
-            self.level += 1
 
     def draw_lives(self):
         for i in range(self.lives):
@@ -164,6 +160,12 @@ class Game:
         if self.two_player:
             for i in range(self.lifes_p2):
                 screen.blit(self.spaceship_p2_life_img, (screen_width - 10 - i * 60, screen_height - 90))
+
+        if self.lives == 0:
+            deathscreen = Deathscreen()
+            while deathscreen.run:
+                deathscreen.draw()
+
 
 
     def draw(self):
