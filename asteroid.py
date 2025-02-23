@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).parent
 class Asteroid(pygame.sprite.Sprite):
     def __init__(self, screen, game, size=None, spawned_by_other=False, x=0, y=0):
         super().__init__()
-        
+
         self.size = 0
         if size is None:
             self.size = r.randint(40, 70)
@@ -50,7 +50,7 @@ class Asteroid(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(center=(self.posx, self.posy))
         self.original_image = self.image
-        self.speed = r.randint(3, 5)
+        self.speed = r.randint(3, 4+ game.level)
 
 
     def hit(self):
