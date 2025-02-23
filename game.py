@@ -62,7 +62,7 @@ class Game:
     def check_collisions(self):
         for bullet in self.bullet_group:
             for asteroid in self.asteroid_group:
-                if bullet.rect.colliderect(asteroid.rect):
+                if pygame.sprite.collide_mask(asteroid, bullet):
                     asteroid.hit()
                     bullet.kill()
                     self.score_vel += 1  
@@ -71,19 +71,19 @@ class Game:
         if self.two_player:
             for bullet in self.bullet_group_p2:
                 for asteroid in self.asteroid_group:
-                    if bullet.rect.colliderect(asteroid.rect):
+                    if pygame.sprite.collide_mask(asteroid, bullet):
                         asteroid.hit()
                         bullet.kill()
                         self.score_vel += 1  
                         pygame.mixer.Sound.play(self.asteroid_hit_sound)
 
         for asteroid in self.asteroid_group:
-            if asteroid.rect.colliderect(self.spaceship.rect):
+            if pygame.sprite.collide_mask(self.spaceship, asteroid):
                 asteroid.kill()
                 self.lives -= 1
 
             if self.two_player:
-                if asteroid.rect.colliderect(self.spaceship_two.rect) & self.two_player:
+                if pygame.sprite.collide_mask(self.spaceship_two , asteroid):
                     asteroid.kill()
                     self.lifes_p2 -= 1
             

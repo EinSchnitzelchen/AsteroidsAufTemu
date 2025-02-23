@@ -47,6 +47,7 @@ class Asteroid(pygame.sprite.Sprite):
             self.spawn()
 
         self.image = pygame.transform.scale(self.image, (self.size * 2, self.size * 2))
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(center=(self.posx, self.posy))
         self.original_image = self.image
         self.speed = r.randint(3, 5)
@@ -101,6 +102,7 @@ class Asteroid(pygame.sprite.Sprite):
         self.rotation = self.rotation + 1
         self.image = pygame.transform.rotate(self.original_image, self.rotation)
         self.rect = self.image.get_rect(center=self.rect.center)
+        self.mask = pygame.mask.from_surface(self.image)
         
 
     def update(self):

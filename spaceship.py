@@ -19,6 +19,7 @@ class Spaceship(pygame.sprite.Sprite):
         self.image = pygame.transform.rotozoom(self.image, 0, 0.75)
         self.org_image = self.image.copy()
         self.rect = self.image.get_rect(center=(70, 600))
+        self.mask = pygame.mask.from_surface(self.image)
 
         self.angle = 0
         self.direction = pygame.Vector2(0, -1)
@@ -96,6 +97,7 @@ class Spaceship(pygame.sprite.Sprite):
         self.direction = pygame.Vector2(0, -1).rotate(-self.angle)
         self.image = pygame.transform.rotate(self.org_image, self.angle)
         self.rect = self.image.get_rect(center=self.rect.center)
+        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
         self.move()
