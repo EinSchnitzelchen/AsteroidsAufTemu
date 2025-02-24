@@ -39,7 +39,6 @@ class Game:
         self.spaceship_p2_life_img = pygame.transform.scale(self.spaceship_p2_life_img, (80, 80))
         self.screen = pygame.display.set_mode((screen_width, screen_height))
 
-
         self.lives = 4
         self.lifes_p2 = 4
 
@@ -133,13 +132,6 @@ class Game:
                             self.all_sprites.add(bullet)
                             pygame.mixer.Sound.play(self.shoot_sound)
 
-                    else:
-                        if self.bullet_group_p2.__len__() < self.max_bullets:
-                            bullet = Bullet(self.spaceship_two,screen)
-                            self.bullet_group_p2.add(bullet)
-                            self.all_sprites.add(bullet)
-                            pygame.mixer.Sound.play(self.shoot_sound)
-
                 if event.key == pygame.K_RSHIFT:
                     if self.two_player:
                         if self.bullet_group.__len__() < self.max_bullets:
@@ -171,12 +163,19 @@ class Game:
                 screen.blit(self.spaceship_p2_life_img, (screen_width - 10 - i * 60, screen_height - 90))
 
     def show_deathscreen(self):
+        self.image = pygame.image.load(BASE_DIR / "Assets/background/main_menu.gif")
+        self.image = pygame.transform.scale(self.image, (screen_width, screen_height))
         self.running = False  # Stoppt das Spiel
-        self.screen.fill((0, 0, 0))  # Bildschirm leeren, um Überlagerungen zu verhindern
+        screen.blit(self.image, (0,0))
         self.show_Text()
         pygame.display.flip()
-        pygame.time.delay(3000)  # 3 Sekunden warten
-        self.reset_game()
+        pygame.time.delay(1000)
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self.reset_game()
+        
+
 
     def reset_game(self):
         self.lives = 4
@@ -191,14 +190,20 @@ class Game:
         self.spaceship.reset_position()
         if self.two_player:
             self.spaceship_two.reset_position()
+        self.image = pygame.image.load(BASE_DIR / "Assets/background/background.png")
+        self.image = pygame.transform.scale(self.image, (screen_width, screen_height))
         self.running = True
     
     def show_Text(self):
         self.current_frame = 0
-        self.font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', round(screen_width / 32) + round(math.sin(self.current_frame)*2))
+        self.font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', round(screen_width / 8) + round(math.sin(self.current_frame)*2))
         Text = self.font.render("YOU DIED",True, (0, 255, 0))
-        text_rect = Text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 + 100))
+        self.font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', round(screen_width / 64) + round(math.sin(self.current_frame)*2))
+        Text_2 = self.font.render("PRESS SPACE TO REPLAY", True, (0,255,0))
+        text_rect = Text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2))
+        text_2_rect = Text_2.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 + 200))
         screen.blit(Text, text_rect)
+        screen.blit(Text_2, text_2_rect)
 
     def draw(self):
         screen.blit(self.image, (0, 0))
