@@ -27,17 +27,12 @@ class Game:
         self.two_player = two_player
         self.level = 1
 
-        self.last_life_bonus = 0
-        self.invulnerable_until = 0
-        self.invulnerable_until = 0
-
         #Initialisieren der Assets, die diese Datei braucht
         self.image = pygame.image.load(BASE_DIR / "Assets/background/background.png")
         self.image = pygame.transform.scale(self.image, (screen_width, screen_height))
         self.shoot_sound = pygame.mixer.Sound(BASE_DIR / "Assets/spaceship/shoot.wav")
         self.asteroid_hit_sound = pygame.mixer.Sound(BASE_DIR / "Assets/asteroid/hit.wav")
         self.spaceship_life_img = pygame.image.load(BASE_DIR / "Assets/spaceship/spaceship.png")
-        self.invis = pygame.image.load(BASE_DIR / "Assets/spaceship/transparrent.png")
         self.spaceship_life_img = pygame.transform.scale(self.spaceship_life_img, (80, 80))
 
         self.spaceship_p2_life_img = pygame.image.load(BASE_DIR / "Assets/spaceship/spaceship_p2.png")
@@ -96,20 +91,8 @@ class Game:
                 if pygame.sprite.collide_mask(self.spaceship_two , asteroid):
                     asteroid.kill()
                     self.lifes_p2 -= 1
-
-                if self.lives <= 0:
-                    self.spaceship.kill()
-                    self.spaceship.pos = pygame.Vector2(-1000, -1000)
-                    self.spaceship.rect.center = self.spaceship.pos
-                
-                if self.lifes_p2 <= 0:
-                    self.spaceship_two.kill()
-                    self.spaceship_two.pos = pygame.Vector2(-1000, -1000)
-                    self.spaceship_two.rect.center = self.spaceship_two.pos
-                    
-        if not self.two_player:
-            if self.lives <= 0 and (not self.two_player or self.lifes_p2 <= 0):
-                self.show_deathscreen()
+        if self.lives <= 0 and (not self.two_player or self.lifes_p2 <= 0):
+            self.show_deathscreen()
 
     def spawn_asteroids(self):
         for _ in range(5 + self.level - 1):
@@ -149,13 +132,6 @@ class Game:
                             self.all_sprites.add(bullet)
                             pygame.mixer.Sound.play(self.shoot_sound)
 
-                    else:
-                        if self.bullet_group_p2.__len__() < self.max_bullets and self.lifes_p2 > 0:
-                            bullet = Bullet(self.spaceship_two,screen)
-                            self.bullet_group_p2.add(bullet)
-                            self.all_sprites.add(bullet)
-                            pygame.mixer.Sound.play(self.shoot_sound)
-
                 if event.key == pygame.K_RSHIFT:
                     if self.two_player:
                         if self.bullet_group.__len__() < self.max_bullets and self.lives > 0:
@@ -163,7 +139,6 @@ class Game:
                             self.bullet_group.add(bullet)
                             self.all_sprites.add(bullet)
                             pygame.mixer.Sound.play(self.shoot_sound)
-
 
     def update(self):
         self.all_sprites.update()
@@ -178,36 +153,6 @@ class Game:
         if not self.asteroid_group:
             self.spawn_asteroids()
             self.level += 1
-
-        if self.score_vel % 15 == 0 and self.score_vel > 0 and self.last_life_bonus != self.score_vel:
-            if self.two_player:
-                if self.lives < 4:
-                    self.lives += 1
-                if self.lifes_p2 < 4:
-                    self.lifes_p2 += 1
-            else:
-                if self.lives < 4:
-                    self.lives += 1
-            self.last_life_bonus = self.score_vel
-
-        if self.lives > 0 and not self.spaceship.alive():
-            self.spaceship = Spaceship(screen, False)
-            self.all_sprites.add(self.spaceship)
-            self.spaceship.rect.center = (screen_width // 2, screen_height // 2)  # Spawn in der Mitte
-            self.spaceship.mask = pygame.mask.from_surface(self.spaceship.image)  # ❗ Maske neu setzen ❗
-            self.invulnerable_until = pygame.time.get_ticks() + 2000
-
-
-        if self.two_player and self.lifes_p2 > 0 and not self.spaceship_two.alive():
-            self.spaceship_two = Spaceship(screen, True)
-            self.all_sprites.add(self.spaceship_two)
-            self.spaceship_two.rect.center = (screen_width // 3, screen_height // 2)  # Etwas versetzt spawnen
-            self.spaceship_two.mask = pygame.mask.from_surface(self.spaceship_two.image)  # ❗ Maske neu setzen ❗
-            self.invulnerable_until = pygame.time.get_ticks() + 2000
-
-
-        if self.lifes_p2 == 0 and self.lives == 0:
-            self.show_deathscreen()
 
     def draw_lives(self):
         for i in range(self.lives):
@@ -227,43 +172,46 @@ class Game:
         pygame.time.delay(1000)
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.run = False
                 if event.key == pygame.K_SPACE:
                     self.reset_game()
         
+
+
     def reset_game(self):
         self.lives = 4
         self.lifes_p2 = 4
         self.score_vel = 0
         self.level = 1
-
+        for asteroid in self.asteroid_group:
+            asteroid.kill()
         self.asteroid_group.empty()
         self.bullet_group.empty()
         self.bullet_group_p2.empty()
-        self.all_sprites.empty()
-
-        self.spaceship = Spaceship(screen, False)
-        self.all_sprites.add(self.spaceship)
-
+        self.spaceship.reset_position()
         if self.two_player:
-            self.spaceship_two = Spaceship(screen, True)
-            self.all_sprites.add(self.spaceship_two)
-
-        self.spawn_asteroids()
-
-        self.invulnerable_until = pygame.time.get_ticks() + 2000
-
-        self.run = True
-
+            self.spaceship_two.reset_position()
+        self.image = pygame.image.load(BASE_DIR / "Assets/background/background.png")
+        self.image = pygame.transform.scale(self.image, (screen_width, screen_height))
+        self.running = True
+    
     def show_Text(self):
         self.current_frame = 0
         self.font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', round(screen_width / 8) + round(math.sin(self.current_frame)*2))
         Text = self.font.render("YOU DIED",True, (0, 255, 0))
+        
+        self.font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', round(screen_width / 32) + round(math.sin(self.current_frame)*2))
+        Text_2 = self.font.render("YOU SCORED "+ str(self.score_vel) +  " POINTS!" ,True, (255, 0, 255))
+        
         self.font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', round(screen_width / 64) + round(math.sin(self.current_frame)*2))
-        Text_2 = self.font.render("PRESS SPACE TO REPLAY", True, (0,255,0))
-        text_rect = Text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2))
-        text_2_rect = Text_2.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 + 200))
+        Text_3 = self.font.render("PRESS SPACE TO REPLAY", True, (0,255,0))
+        text_rect = Text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 - 100))
+        text_2_rect = Text_2.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 + 100))
+        text_3_rect = Text_3.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 + 200))
         screen.blit(Text, text_rect)
         screen.blit(Text_2, text_2_rect)
+        screen.blit(Text_3, text_3_rect)
 
     def draw(self):
         screen.blit(self.image, (0, 0))
