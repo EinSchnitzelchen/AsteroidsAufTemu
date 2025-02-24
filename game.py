@@ -4,6 +4,7 @@ from asteroid import Asteroid
 from spaceship import Spaceship
 from bullet import Bullet
 from pathlib import Path
+import math
 
 pygame.init()
 
@@ -87,7 +88,8 @@ class Game:
                 if pygame.sprite.collide_mask(self.spaceship_two , asteroid):
                     asteroid.kill()
                     self.lifes_p2 -= 1
-            
+        if self.lives <= 0 and (not self.two_player or self.lifes_p2 <= 0):
+            self.show_deathscreen()
 
     def spawn_asteroids(self):
         for _ in range(5 + self.level - 1):
@@ -165,6 +167,32 @@ class Game:
             for i in range(self.lifes_p2):
                 screen.blit(self.spaceship_p2_life_img, (screen_width - 10 - i * 60, screen_height - 90))
 
+    def show_deathscreen(self):
+        self.running = False  # Stoppt das Spiel
+        self.screen.fill((0, 0, 0))  # Bildschirm leeren, um Überlagerungen zu verhindern
+        self.show_Text()
+        pygame.display.flip()
+        pygame.time.delay(3000)  # 3 Sekunden warten
+        self.reset_game()
+
+    def reset_game(self):
+        self.lives = 4
+        self.lifes_p2 = 4
+        self.score_vel = 0
+        self.asteroid_group.empty()
+        self.bullet_group.empty()
+        self.bullet_group_p2.empty()
+        self.spaceship.reset_position()
+        if self.two_player:
+            self.spaceship_two.reset_position()
+        self.running = True
+    
+    def show_Text(self):
+        self.current_frame = 0
+        self.font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', round(screen_width / 32) + round(math.sin(self.current_frame)*2))
+        Text = self.font.render("YOU DIED",True, (0, 255, 0))
+        text_rect = Text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 + 100))
+        screen.blit(Text, text_rect)
 
     def draw(self):
         screen.blit(self.image, (0, 0))
