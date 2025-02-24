@@ -182,6 +182,9 @@ class Game:
         self.lives = 4
         self.lifes_p2 = 4
         self.score_vel = 0
+        self.level = 1
+        for asteroid in self.asteroid_group:
+            asteroid.kill()
         self.asteroid_group.empty()
         self.bullet_group.empty()
         self.bullet_group_p2.empty()
