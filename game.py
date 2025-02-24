@@ -17,6 +17,7 @@ screen_width = display[0].width
 screen_height = display[0].height
 screen = pygame.display.set_mode((screen_width, screen_height))
 
+
 # Hier wird das Text Objekt erstellt mit der lokalen Schriftart
 font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', round(screen_width / 32))
 
@@ -36,6 +37,8 @@ class Game:
 
         self.spaceship_p2_life_img = pygame.image.load(BASE_DIR / "Assets/spaceship/spaceship_p2.png")
         self.spaceship_p2_life_img = pygame.transform.scale(self.spaceship_p2_life_img, (80, 80))
+        self.screen = pygame.display.set_mode((screen_width, screen_height))
+
 
         self.lives = 4
         self.lifes_p2 = 4

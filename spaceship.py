@@ -99,6 +99,9 @@ class Spaceship(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.rect.center)
         self.mask = pygame.mask.from_surface(self.image)
 
+    def reset_position(self):
+        self.pos = [self.screen.get_width() / 2, self.screen.get_height() / 2]
+
     def update(self):
         self.move()
         self.wrap_around()
