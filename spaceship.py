@@ -33,13 +33,10 @@ class Spaceship(pygame.sprite.Sprite):
     def wrap_around(self):
         if self.pos.x < 0:
             self.pos.x = self.screen.get_width()
-
         elif self.pos.x > self.screen.get_width():
             self.pos.x = 0
-
         if self.pos.y < 0:
             self.pos.y = self.screen.get_height()
-
         elif self.pos.y > self.screen.get_height():
             self.pos.y = 0
         
