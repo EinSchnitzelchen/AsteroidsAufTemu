@@ -57,7 +57,7 @@ class Game:
             self.all_sprites.add(self.spaceship_two)
 
         self.all_sprites.add(self.spaceship)
-        self.score_vel = 14
+        self.score_vel = 0
 
         self.spawn_asteroids()
         self.channel = self.sound.play(loops = -1)
