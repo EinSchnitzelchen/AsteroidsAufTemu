@@ -5,7 +5,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).parent
 
 class Spaceship(pygame.sprite.Sprite):
-    def __init__(self, screen, player_two):
+    def __init__(self, screen, player_two = False):
         pygame.sprite.Sprite.__init__(self)
         self.screen = screen
         self.player_two = player_two
@@ -23,7 +23,7 @@ class Spaceship(pygame.sprite.Sprite):
 
         self.angle = 0
         self.direction = pygame.Vector2(0, -1)
-        self.pos = [self.screen.get_width() / 2, self.screen.get_height() / 2]
+        self.pos = [self.game.screen.get_width() / 2, self.game.screen.get_height() / 2]
         self.velocity = pygame.Vector2(0, 0)
 
         self.acceleration = 0.3
@@ -97,7 +97,7 @@ class Spaceship(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
     def reset_position(self):
-        self.pos = [self.screen.get_width() / 2, self.screen.get_height() / 2]
+        self.pos = [self.game.screen.get_width() / 2, self.game.screen.get_height() / 2]
         self.velocity = pygame.Vector2(0, 0)
         self.angle = 0
         self.direction = pygame.Vector2(0, -1)

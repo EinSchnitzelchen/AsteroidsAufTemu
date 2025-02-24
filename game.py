@@ -27,6 +27,9 @@ class Game:
         self.two_player = two_player
         self.level = 1
 
+        self.spaceship_destroyed = False
+
+
         #Initialisieren der Assets, die diese Datei braucht
         self.image = pygame.image.load(BASE_DIR / "Assets/background/background.png")
         self.image = pygame.transform.scale(self.image, (screen_width, screen_height))
@@ -49,6 +52,11 @@ class Game:
         self.bullet_group_p2 = pygame.sprite.Group()
         self.asteroid_group = pygame.sprite.Group()
         self.max_bullets = 2
+
+        self.explosion_frames = [
+            pygame.image.load(BASE_DIR / f"Assets/spaceship/explosion/{i}.png")
+            for i in range(1, 13)
+        ]
 
         self.spaceship = Spaceship(screen, False)
 
@@ -82,17 +90,29 @@ class Game:
                         pygame.mixer.Sound.play(self.asteroid_hit_sound)
 
         for asteroid in self.asteroid_group:
-
             if pygame.sprite.collide_mask(self.spaceship, asteroid):
                 asteroid.kill()
                 self.lives -= 1
 
             if self.two_player:
-                if pygame.sprite.collide_mask(self.spaceship_two , asteroid):
+                if pygame.sprite.collide_mask(self.spaceship_two, asteroid):
                     asteroid.kill()
                     self.lifes_p2 -= 1
-        if self.lives <= 0 and (not self.two_player or self.lifes_p2 <= 0):
+
+        # Explosion abspielen, wenn ein Spieler stirbt (aber nur einmal)
+        if self.lives <= 0 and not self.spaceship_destroyed:
+            self.spaceship_destroyed = True
+            self.play_explosion(self.spaceship)
+
+        if self.two_player and self.lifes_p2 <= 0 and not self.spaceship_two_destroyed:
+            self.spaceship_two_destroyed = True
+            self.play_explosion(self.spaceship_two)
+
+        # Deathscreen NUR anzeigen, wenn beide tot sind
+        if self.spaceship_destroyed and (not self.two_player or self.spaceship_two_destroyed):
             self.show_deathscreen()
+
+
 
     def spawn_asteroids(self):
         for _ in range(5 + self.level - 1):
@@ -184,17 +204,28 @@ class Game:
         self.lifes_p2 = 4
         self.score_vel = 0
         self.level = 1
-        for asteroid in self.asteroid_group:
-            asteroid.kill()
+        self.spaceship_destroyed = False  
+        self.spaceship_two_destroyed = False  
+
+        # Lösche alte Objekte
         self.asteroid_group.empty()
         self.bullet_group.empty()
         self.bullet_group_p2.empty()
-        self.spaceship.reset_position()
+
+        # 🚀 Neues Raumschiff erstellen
+        self.spaceship = Spaceship(self)  
         if self.two_player:
-            self.spaceship_two.reset_position()
+            self.spaceship_two = Spaceship(self, player_two=True)  # Zweiter Spieler
+
+        # Hintergrund wiederherstellen
         self.image = pygame.image.load(BASE_DIR / "Assets/background/background.png")
         self.image = pygame.transform.scale(self.image, (screen_width, screen_height))
+        
         self.running = True
+
+
+
+
     
     def show_Text(self):
         self.current_frame = 0
@@ -212,6 +243,17 @@ class Game:
         screen.blit(Text, text_rect)
         screen.blit(Text_2, text_2_rect)
         screen.blit(Text_3, text_3_rect)
+
+    def play_explosion(self, spaceship):
+        
+        spaceship.kill()
+        explosion_pos = spaceship.rect.topleft  # Speichere letzte Position
+        
+        for frame in self.explosion_frames:
+            #screen.fill((0, 0, 0))  # Optional: Bildschirm leeren
+            screen.blit(frame, explosion_pos)  # Explosion anzeigen
+            pygame.display.flip()  # Bildschirm aktualisieren
+            pygame.time.delay(50)  # Kurze Verzögerung für Animation
 
     def draw(self):
         screen.blit(self.image, (0, 0))
