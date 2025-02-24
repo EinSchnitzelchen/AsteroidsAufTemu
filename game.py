@@ -148,13 +148,21 @@ class Game:
                             self.all_sprites.add(bullet)
                             pygame.mixer.Sound.play(self.shoot_sound)
 
+                    else:
+                        if self.bullet_group_p2.__len__() < self.max_bullets:
+                            bullet = Bullet(self.spaceship_two,screen)
+                            self.bullet_group_p2.add(bullet)
+                            self.all_sprites.add(bullet)
+                            pygame.mixer.Sound.play(self.shoot_sound)
+
                 if event.key == pygame.K_RSHIFT:
                     if self.two_player:
-                        if self.bullet_group.__len__() < self.max_bullets and self.lives > 0:
+                        if self.bullet_group.__len__() < self.max_bullets:
                             bullet = Bullet(self.spaceship, screen)
                             self.bullet_group.add(bullet)
                             self.all_sprites.add(bullet)
                             pygame.mixer.Sound.play(self.shoot_sound)
+
 
     def update(self):
         self.all_sprites.update()
@@ -184,12 +192,18 @@ class Game:
         if self.lives > 0 and not self.spaceship.alive():
             self.spaceship = Spaceship(screen, False)
             self.all_sprites.add(self.spaceship)
+            self.spaceship.rect.center = (screen_width // 2, screen_height // 2)  # Spawn in der Mitte
+            self.spaceship.mask = pygame.mask.from_surface(self.spaceship.image)  # ❗ Maske neu setzen ❗
             self.invulnerable_until = pygame.time.get_ticks() + 2000
+
 
         if self.two_player and self.lifes_p2 > 0 and not self.spaceship_two.alive():
             self.spaceship_two = Spaceship(screen, True)
             self.all_sprites.add(self.spaceship_two)
+            self.spaceship_two.rect.center = (screen_width // 3, screen_height // 2)  # Etwas versetzt spawnen
+            self.spaceship_two.mask = pygame.mask.from_surface(self.spaceship_two.image)  # ❗ Maske neu setzen ❗
             self.invulnerable_until = pygame.time.get_ticks() + 2000
+
 
         if self.lifes_p2 == 0 and self.lives == 0:
             self.show_deathscreen()
@@ -215,8 +229,6 @@ class Game:
                 if event.key == pygame.K_SPACE:
                     self.reset_game()
         
-
-
     def reset_game(self):
         self.lives = 4
         self.lifes_p2 = 4
@@ -232,10 +244,15 @@ class Game:
         self.all_sprites.add(self.spaceship)
 
         if self.two_player:
-            self.spaceship_two.reset_position()
-        self.image = pygame.image.load(BASE_DIR / "Assets/background/background.png")
-        self.image = pygame.transform.scale(self.image, (screen_width, screen_height))
-        self.running = True
+            self.spaceship_two = Spaceship(screen, True)
+            self.all_sprites.add(self.spaceship_two)
+
+        self.spawn_asteroids()
+
+        self.invulnerable_until = pygame.time.get_ticks() + 2000
+
+        self.run = True
+
     
     def show_Text(self):
         self.current_frame = 0
