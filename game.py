@@ -29,6 +29,7 @@ class Game:
 
         self.last_life_bonus = 0
         self.invulnerable_until = 0
+        self.invulnerable_until = 0
 
         #Initialisieren der Assets, die diese Datei braucht
         self.image = pygame.image.load(BASE_DIR / "Assets/background/background.png")
@@ -61,7 +62,7 @@ class Game:
             self.all_sprites.add(self.spaceship_two)
 
         self.all_sprites.add(self.spaceship)
-        self.score_vel = 0 
+        self.score_vel = 14
 
         self.spawn_asteroids()
         self.channel = self.sound.play(loops = -1)
@@ -86,6 +87,7 @@ class Game:
                         pygame.mixer.Sound.play(self.asteroid_hit_sound)
 
         for asteroid in self.asteroid_group:
+
             if pygame.sprite.collide_mask(self.spaceship, asteroid):
                 asteroid.kill()
                 self.lives -= 1
@@ -114,7 +116,6 @@ class Game:
             asteroid = Asteroid(screen, self)
             self.asteroid_group.add(asteroid)
             self.all_sprites.add(asteroid)
-
 
     def show_score(self, x, y):
         score = font.render("Score: " + str(self.score_vel), True, (0, 255, 0))
@@ -149,7 +150,7 @@ class Game:
                             pygame.mixer.Sound.play(self.shoot_sound)
 
                     else:
-                        if self.bullet_group_p2.__len__() < self.max_bullets:
+                        if self.bullet_group_p2.__len__() < self.max_bullets and self.lifes_p2 > 0:
                             bullet = Bullet(self.spaceship_two,screen)
                             self.bullet_group_p2.add(bullet)
                             self.all_sprites.add(bullet)
@@ -157,7 +158,7 @@ class Game:
 
                 if event.key == pygame.K_RSHIFT:
                     if self.two_player:
-                        if self.bullet_group.__len__() < self.max_bullets:
+                        if self.bullet_group.__len__() < self.max_bullets and self.lives > 0:
                             bullet = Bullet(self.spaceship, screen)
                             self.bullet_group.add(bullet)
                             self.all_sprites.add(bullet)
@@ -213,7 +214,7 @@ class Game:
             screen.blit(self.spaceship_life_img, (10 + i * 60, screen_height - 90))
 
         if self.two_player:
-            for i in range(self.lifes_p2):
+            for i in range(self.lifes_p2 + 1):
                 screen.blit(self.spaceship_p2_life_img, (screen_width - 10 - i * 60, screen_height - 90))
 
     def show_deathscreen(self):
@@ -253,7 +254,6 @@ class Game:
 
         self.run = True
 
-    
     def show_Text(self):
         self.current_frame = 0
         self.font = pygame.font.Font(BASE_DIR / 'Assets/PixelifySans-Regular.ttf', round(screen_width / 8) + round(math.sin(self.current_frame)*2))
