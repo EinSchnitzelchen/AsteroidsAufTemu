@@ -98,6 +98,9 @@ class Spaceship(pygame.sprite.Sprite):
 
     def reset_position(self):
         self.pos = [self.screen.get_width() / 2, self.screen.get_height() / 2]
+        self.velocity = pygame.Vector2(0, 0)
+        self.angle = 0
+        self.direction = pygame.Vector2(0, -1)
 
     def update(self):
         self.move()
